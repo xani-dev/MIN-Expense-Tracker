@@ -31,4 +31,14 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### `npm run eject`
 
+## Future improvements: 
 
+- [ ] Add edit mode
+- [ ] Improve Data Field
+- [ ] Add a loading state in <TransactionsList />
+- [ ] Add a confirmation dialog for deleting transactions
+
+
+## License information: 
+
+[MIT](https://choosealicense.com/licenses/mit/)
