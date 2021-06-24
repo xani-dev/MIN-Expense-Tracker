@@ -1,8 +1,8 @@
 import React from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import "./App.css";
-import { NavBar } from "./components/NavBar";
-import { TransactionsLists } from "./components/Transactions/List";
+import { NavBar } from "./NavBar";
+import { TransactionsLists } from "./list";
 
 const theme = createMuiTheme({
 	palette: {
