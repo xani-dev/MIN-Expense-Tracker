@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "/min.png"
+import logo from './min.png';
 import styled, { css } from "styled-components";
 
 const Container = styled.div`
