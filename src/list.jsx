@@ -43,7 +43,7 @@ const TableCell = styled.td`
 `;
 
 const Amount = styled.p`
-	color: ${(props) => (props.type === "expense" ? "#B77A9E" : "#3DB2BB")};
+	color: ${({type}) => (type === "expense" ? "#B77A9E" : "#3DB2BB")};
 `;
 
 const Container = styled.div`
@@ -96,9 +96,11 @@ const TransactionsLists = () => {
 	const [transactions, setTransactions] = useState([]);
 	const [openDrawer, setOpenDrawer] = useState(false);
 
+	// now we'll pass the data in the data array with useEffect to setTransactions 
 	useEffect(() => {
 		setTransactions(data);
 	}, []);
+
 
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
@@ -148,7 +150,7 @@ const addTransactionToList = (data) => {
 						<HeadCell>Name</HeadCell>
 						<HeadCell>Category</HeadCell>
 						<HeadCell>Amount</HeadCell>
-						<HeadCell></HeadCell>
+						<HeadCell>Actions</HeadCell>
 					</tr>
 				</thead>
 				<tbody>

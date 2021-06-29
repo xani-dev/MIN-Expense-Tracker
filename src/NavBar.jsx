@@ -22,6 +22,12 @@ const Item = styled.li`
 			background: #9C709E;
 			font-weight: bold;
 		`};
+		${(props) =>
+			props.disabled &&
+			css`
+				background: #FFF;
+				font-weight: bold;
+			`};
 `;
 
 const Logo = styled.img`
@@ -34,9 +40,9 @@ const NavBar = () => {
 		<Container>
 			<Logo src={logo} className="App-logo" alt="App Logo" />
 			<List>
-				<Item>Dashboard</Item>
-				<Item active>Calendar</Item>
-				<Item>Transactions</Item>
+				<Item active>Dashboard</Item>
+				<Item>Calendar</Item>
+				<Item disabled>Transactions</Item>
 			</List>
 		</Container>
 	);
