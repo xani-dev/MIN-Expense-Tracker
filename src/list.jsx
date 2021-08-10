@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
+//YUP is the validation library I'm using to work with Formik
 import * as Yup from "yup";
 
 import data from "./data";
@@ -43,7 +44,7 @@ const TableCell = styled.td`
 `;
 
 const Amount = styled.p`
-	color: ${({type}) => (type === "expense" ? "#B77A9E" : "#3DB2BB")};
+	color: ${({ type }) => (type === "expense" ? "#B77A9E" : "#3DB2BB")};
 `;
 
 const Container = styled.div`
@@ -96,17 +97,17 @@ const TransactionsLists = () => {
 	const [transactions, setTransactions] = useState([]);
 	const [openDrawer, setOpenDrawer] = useState(false);
 
-	// now we'll pass the data in the data array with useEffect to setTransactions 
+	// now we'll pass the data in the data array with useEffect to setTransactions
 	useEffect(() => {
 		setTransactions(data);
 	}, []);
-
 
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
 		minimumFractionDigits: 2,
 	});
+
 
 	const transactionSchema = Yup.object().shape({
 		name: Yup.string().required("Required field"),
@@ -126,9 +127,9 @@ const TransactionsLists = () => {
 		setTransactions(_transactions);
 	};
 
-const addTransactionToList = (data) => {
-	setTransactions([...transactions, {...data}])
-}
+	const addTransactionToList = (data) => {
+		setTransactions([...transactions, { ...data }]);
+	};
 
 	return (
 		<Container>
@@ -154,23 +155,22 @@ const addTransactionToList = (data) => {
 					</tr>
 				</thead>
 				<tbody>
-					{transactions.map((transaction) => {
+					{/* here we are destructuring the transactions' object properties */}
+					{transactions.map(({ id, date, name, category, type, amount }) => {
 						return (
-							<tr key={transaction.id}>
-								<TableCell>{transaction.date}</TableCell>
-								<TableCell>{transaction.name}</TableCell>
-								<TableCell>{transaction.category}</TableCell>
+							<tr key={id}>
+								<TableCell>{date}</TableCell>
+								<TableCell>{name}</TableCell>
+								<TableCell>{category}</TableCell>
 								<TableCell>
-									<Amount type={transaction.type}>
-										{formatter.format(transaction.amount)}
-									</Amount>
+									<Amount type={type}>{formatter.format(amount)}</Amount>
 								</TableCell>
 								<TableCell>
 									<EditIcon style={{ marginRight: "16px" }} />
 									<DeleteForeverIcon
 										style={{ color: "B77A9E", cursor: "pointer" }}
 										onClick={() => {
-											handleDelete(transaction.id);
+											handleDelete(id);
 										}}
 									/>
 								</TableCell>
@@ -227,8 +227,9 @@ const addTransactionToList = (data) => {
 											<TextField
 												fullWidth
 												id="date"
+												type="date"
 												name="date"
-												label="Date"
+												label=""
 												value={values.date}
 												onChange={handleChange}
 												error={touched.date && Boolean(errors.date)}
