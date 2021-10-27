@@ -4,8 +4,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #221330;
   color: white;
-  font-family: "Spartan";
-}
+  font-family: 'Montserrat', sans-serif;}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
