@@ -33,9 +33,9 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Future improvements: 
 
-- [ ] Add edit mode
+- [ X ] ~~Add edit mode~~ Added Oct 27th, 2021
 - [ ] Improve Data Field
-- [ ] Add a loading state in <TransactionsList />
+- [ ] Add a loading state in `<TransactionsList />`
 - [ ] Add a confirmation dialog for deleting transactions
 
 

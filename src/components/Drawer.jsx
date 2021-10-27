@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import styled from "styled-components";
+
 //YUP is the validation library I'm using to work with Formik
 import * as Yup from "yup";
 
-import data from "./data";
-
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import EditIcon from "@material-ui/icons/Edit";
 import Button from "@material-ui/core/Button";
 import Drawer from "@material-ui/core/Drawer";
 import TextField from "@material-ui/core/TextField";
@@ -18,44 +15,6 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 
 import { Formik, Form } from "formik";
-// import { Field } from "formik";
-// import { ErrorSharp, TouchAppRounded } from "@material-ui/icons";
-
-const Table = styled.table`
-	width: 100%;
-	text-align: left;
-	padding: 16px 0;
-`;
-
-const HeadCell = styled.td`
-	padding: 16px 0;
-	width: 20%;
-	font-weight: bold;
-`;
-
-const TableCell = styled.td`
-	padding: 8px 0;
-	width: 23%;
-	&(:last-of-type) {
-		display: flex;
-		justify-content: flex-end;
-		width: 8%;
-	}
-`;
-
-const Amount = styled.p`
-	color: ${({ type }) => (type === "expense" ? "#B77A9E" : "#3DB2BB")};
-`;
-
-const Container = styled.div`
-width: 100%;
-padding 64px;
-`;
-
-const AddButtonWrapper = styled.div`
-	display: flex;
-	justify-content: flex-end;
-`;
 
 const FormWrapper = styled.div`
 	padding: 16px;
@@ -81,9 +40,10 @@ const ActionsWrapper = styled.div`
 `;
 
 const categories = [
-	{ value: "eating_out", label: "Eating out" },
+	{ value: "salary", label: "Salary" },
+	{ value: "eating out", label: "Eating out" },
 	{ value: "clothes", label: "Clothes" },
-	{ value: "electronics", label: "Electronics" },
+	{ value: "transportation", label: "Transportation" },
 	{ value: "groceries", label: "Groceries" },
 	{ value: "other", label: "Other" },
 ];
@@ -93,23 +53,16 @@ const types = [
 	{ value: "income", label: "Income" },
 ];
 
-const TransactionsLists = () => {
-	const [transactions, setTransactions] = useState([]);
-	const [openDrawer, setOpenDrawer] = useState(false);
-
-	// now we'll pass the data in the data array with useEffect to setTransactions
-	useEffect(() => {
-		setTransactions(data);
-	}, []);
-
-	const formatter = new Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "USD",
-		minimumFractionDigits: 2,
-	});
-
-
-	const transactionSchema = Yup.object().shape({
+const TransactionDrawer = (props) => {
+    const {mode, open, onClose, transaction, addTransaction, editTransaction } = props
+    const emptyFormInitialValues = {
+        name: "",
+        amount: "",
+        date: "",
+        category: "",
+        type: "expense",
+    }
+    const transactionSchema = Yup.object().shape({
 		name: Yup.string().required("Required field"),
 		date: Yup.date()
 			.default(() => new Date())
@@ -119,88 +72,26 @@ const TransactionsLists = () => {
 		type: Yup.string().required("Required field"),
 	});
 
-	const handleDelete = (id) => {
-		console.log("deleting row", id);
-		const _transactions = [...transactions].filter(
-			(transaction) => transaction.id !== id
-		);
-		setTransactions(_transactions);
-	};
-
-	const addTransactionToList = (data) => {
-		setTransactions([...transactions, { ...data }]);
-	};
-
-	return (
-		<Container>
-			<AddButtonWrapper>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={() => setOpenDrawer(true)}
-				>
-					{" "}
-					+ Add Transaction
-				</Button>
-			</AddButtonWrapper>
-
-			<Table>
-				<thead>
-					<tr>
-						<HeadCell>Date</HeadCell>
-						<HeadCell>Name</HeadCell>
-						<HeadCell>Category</HeadCell>
-						<HeadCell>Amount</HeadCell>
-						<HeadCell>Actions</HeadCell>
-					</tr>
-				</thead>
-				<tbody>
-					{/* here we are destructuring the transactions' object properties */}
-					{transactions.map(({ id, date, name, category, type, amount }) => {
-						return (
-							<tr key={id}>
-								<TableCell>{date}</TableCell>
-								<TableCell>{name}</TableCell>
-								<TableCell>{category}</TableCell>
-								<TableCell>
-									<Amount type={type}>{formatter.format(amount)}</Amount>
-								</TableCell>
-								<TableCell>
-									<EditIcon style={{ marginRight: "16px" }} />
-									<DeleteForeverIcon
-										style={{ color: "B77A9E", cursor: "pointer" }}
-										onClick={() => {
-											handleDelete(id);
-										}}
-									/>
-								</TableCell>
-							</tr>
-						);
-					})}
-				</tbody>
-			</Table>
-			{openDrawer && (
-				<Drawer
+return (
+    <Drawer
 					anchor="right"
-					open={openDrawer}
-					onClose={() => setOpenDrawer(!openDrawer)}
+					open={open}
+					onClose={onClose}
 				>
 					<FormWrapper>
-						<h2>New Transaction</h2>
+						<h2>{mode === 'add' ? "New" : "Edit"} Transaction</h2>
 						<Formik
-							initialValues={{
-								name: "",
-								amount: "",
-								date: "",
-								category: "eating_out",
-								type: "expense",
-							}}
+							initialValues={ 
+								mode === 'add' ? emptyFormInitialValues : transaction
+							}
 							validationSchema={transactionSchema}
 							onSubmit={(values, { setSubmitting }) => {
 								console.log(JSON.stringify(values, null, 2));
-								addTransactionToList(values);
+								mode === 'add' 
+								? addTransaction(values) 
+								: editTransaction(values);
 								setSubmitting(false);
-								setOpenDrawer(false);
+								onClose();
 							}}
 						>
 							{({
@@ -288,7 +179,7 @@ const TransactionsLists = () => {
 											<Button
 												variant="outlined"
 												color="primary"
-												onClick={() => setOpenDrawer(false)}
+												onClick={() => onClose()}
 											>
 												Cancel
 											</Button>
@@ -307,9 +198,7 @@ const TransactionsLists = () => {
 						</Formik>
 					</FormWrapper>
 				</Drawer>
-			)}
-		</Container>
-	);
+);
 };
 
-export { TransactionsLists };
+export {TransactionDrawer}
