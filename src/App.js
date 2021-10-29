@@ -1,10 +1,10 @@
 import React from "react";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import "./App.css";
 import { NavBar } from "./components/NavBar";
 import { TransactionsLists } from "./components/TransactionList";
 
-const theme = createMuiTheme({
+const theme = createTheme({
 	palette: {
 		primary: {
 			main: "#D57EA7",
@@ -18,6 +18,7 @@ const theme = createMuiTheme({
 		MuiInputLabel: {
 			root: { color: "#fff", fontWeight: "normal" },
 		},
+
 		MuiInput: {
 			underline: {
 				"&:before": {
@@ -48,12 +49,12 @@ const theme = createMuiTheme({
 
 function App() {
 	return (
-		<MuiThemeProvider theme={theme}>
+		<ThemeProvider theme={theme}>
 			<div className="layout">
 				<NavBar />
 				<TransactionsLists />
 			</div>
-		</MuiThemeProvider>
+		</ThemeProvider>
 	);
 }
 
