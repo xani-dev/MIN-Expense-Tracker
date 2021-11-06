@@ -1,5 +1,5 @@
 import React from "react";
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "./App.css";
 import { NavBar } from "./components/NavBar";
 import { TransactionsLists } from "./components/TransactionList";
