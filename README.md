@@ -36,7 +36,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 - [x] ~~Add edit mode~~ Added Oct 27th, 2021
 - [x] ~~Add search bar~~ Added Oct 29th, 2021
 - [x] ~~Add a loading state in `<TransactionsList />`~~ Added Oct 29th, 2021
-- [ ] Create Filters by Type and Category
+- [x] ~~Create Filters by Type and Category~~ Added Nov 10th, 2021
 - [ ] Add a confirmation dialog for deleting transactions
 
 
