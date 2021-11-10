@@ -122,6 +122,16 @@ const TransactionsLists = () => {
     filterByName(search);
   }, [search]);
 
+  useEffect(() => { 
+	console.log("useEffect categories: ", categories);
+    filterByCategory();
+  }, [categories]);
+
+ useEffect(()=> {
+	 console.log("useEffectTypes: ", types);
+	 filterByType();
+ }, [types]);
+
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -176,6 +186,35 @@ const TransactionsLists = () => {
     setFilteredTransactions(_filteredTransactions);
   };
 
+  const filterByCategory = () => {
+	const checked = Object.keys(categories).filter(
+		(category) => categories[category].checked
+		);	
+		if (checked.length === 0) {
+			console.log("original array ", transactions);
+			setFilteredTransactions(transactions);
+		} else {
+			const _filteredTransactions = transactions.filter((transaction) => {
+				return categories[transaction.category].checked === true;
+			});
+			setFilteredTransactions(_filteredTransactions);
+			console.log("_filteredTransactions: ", _filteredTransactions);
+		}
+	};
+
+	const filterByType = () => {
+		const checked = Object.keys(types).filter(
+			(type) => types[type].checked
+		);
+		if (checked.length === 0) {
+			setFilteredTransactions(transactions);
+		} else {
+			const _filteredTransactions = transactions.filter((transaction) => {
+				return types[transaction.type].checked === true;
+			});
+			setFilteredTransactions(_filteredTransactions);
+		}
+	};
   return (
     <Container>
       <ActionsWrapper>
