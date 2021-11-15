@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
 
-import data from "../data";
+// Getting Data from either data file or Strapi 
+//import data from "../data";
+import { transactionsAPI } from "../services/transactions";
 
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
@@ -74,10 +76,10 @@ const AVAILABLE_MODES = {
 const availableCategories = [
   { value: "eating_out", label: "Eating Out" },
   { value: "clothing", label: "Clothing" },
-  { value: "electronics", label: "Electronics" },
+  { value: "gadgets", label: "Gadgets" },
   { value: "groceries", label: "Groceries" },
   { value: "other", label: "Other" },
-  { value: "salary", label: "Salary" },
+  { value: "income", label: "Income" },
 ];
 
 const availableTypes = [
@@ -107,10 +109,29 @@ const TransactionsLists = () => {
   );
 
   // now we'll pass the data in the data array with useEffect to setTransactions
-  useEffect(() => {
-    setTimeout(() => {
-      setTransactions(data);
-    }, 3000);
+
+  //fake timeOut loader: 
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setTransactions(data);
+//     }, 3000);
+//   }, []);
+
+useEffect(() => {
+	const getTransactions = async () => {
+		const {data, status} = await transactionsAPI.all()
+		if(status ===200){
+			setTransactions(data.map (transaction =>{
+				return {
+					...transaction, 
+					type: transaction.type.value,
+					category: transaction.category.value,
+				};
+			})
+			);
+		}
+	};
+	getTransactions();
   }, []);
 
   useEffect(() => {
@@ -328,7 +349,7 @@ const TransactionsLists = () => {
               </tr>
             </thead>
             <tbody>
-              {/* here we are destructuring the transactions' object properties */}
+              {/* destructuring the transactions' object properties */}
               {filteredTransactions.map(
                 ({ id, date, name, category, type, amount }) => {
                   return (
