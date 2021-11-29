@@ -40,17 +40,18 @@ const ActionsWrapper = styled.div`
 `;
 
 const categories = [
-	{ value: "salary", label: "Salary" },
-	{ value: "eating out", label: "Eating out" },
-	{ value: "clothes", label: "Clothes" },
-	{ value: "transportation", label: "Transportation" },
-	{ value: "groceries", label: "Groceries" },
-	{ value: "other", label: "Other" },
+	{ value: "clothing", label: "Clothing", id: 1},
+	{ value: "eating_out", label: "Eating out", id: 2 },
+	{ value: "gadgets", label: "Gadgets", id: 3 },
+	{ value: "groceries", label: "Groceries", id: 4 },
+	{ value: "transportation", label: "Transportation", id: 5 },
+	{ value: "income", label: "Income", id: 6 },
+	{ value: "other", label: "Other", id: 7 },
 ];
 
 const types = [
-	{ value: "expense", label: "Expense" },
-	{ value: "income", label: "Income" },
+	{ value: "expense", label: "Expense", id: 1 },
+	{ value: "income", label: "Income", id: 2 },
 ];
 
 const TransactionDrawer = (props) => {
@@ -86,10 +87,16 @@ return (
 							}
 							validationSchema={transactionSchema}
 							onSubmit={(values, { setSubmitting }) => {
-								console.log(JSON.stringify(values, null, 2));
+								console.log("Values submitted: " , values);
+								const dbValues = {
+									...values,
+									category:categories.find(cat => cat.value === values.category).value,
+									type:types.find(typ => typ.value === values.type).value,
+								};
+								console.log("dbValues: ", dbValues);
 								mode === 'add' 
-								? addTransaction(values) 
-								: editTransaction(values);
+								? addTransaction(dbValues) 
+								: editTransaction(dbValues);
 								setSubmitting(false);
 								onClose();
 							}}

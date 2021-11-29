@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
 
-// Getting Data from either data file or Strapi 
+// Getting Data from either data file or Strapi
 //import data from "../data";
 import { transactionsAPI } from "../services/transactions";
 
@@ -74,17 +74,19 @@ const AVAILABLE_MODES = {
 };
 
 const availableCategories = [
-  { value: "eating_out", label: "Eating Out" },
-  { value: "clothing", label: "Clothing" },
-  { value: "gadgets", label: "Gadgets" },
-  { value: "groceries", label: "Groceries" },
-  { value: "other", label: "Other" },
-  { value: "income", label: "Income" },
+	{ value: "clothing", label: "Clothing", id: 1},
+	{ value: "eating_out", label: "Eating out", id: 2 },
+	{ value: "gadgets", label: "Gadgets", id: 3 },
+	{ value: "groceries", label: "Groceries", id: 4 },
+  { value: "income", label: "Income", id: 5 },
+  { value: "other", label: "Other", id: 6 },
+	{ value: "transportation", label: "Transportation", id: 7 },
+	
 ];
 
 const availableTypes = [
-	{value: "expense", label:"Expense" },
-	{value: "income", label:"Income" },
+	{ value: "expense", label: "Expense", id: 1 },
+	{ value: "income", label: "Income", id: 2 },
 ];
 
 const TransactionsLists = () => {
@@ -102,36 +104,34 @@ const TransactionsLists = () => {
     }, {})
   );
 
-  const [types, setTypes] = useState(availableTypes.reduce((acc, type) => {
-	  acc[type.value] = {label: type.label, checked: false };
-	  return acc;
-  }, {})
+  const [types, setTypes] = useState(
+    availableTypes.reduce((acc, type) => {
+      acc[type.value] = { label: type.label, checked: false };
+      return acc;
+    }, {})
   );
+
+  //fake timeOut loader:
+  //   useEffect(() => {
+  //     setTimeout(() => {
+  //       setTransactions(data);
+  //     }, 3000);
+  //   }, []);
 
   // now we'll pass the data in the data array with useEffect to setTransactions
 
-  //fake timeOut loader: 
-//   useEffect(() => {
-//     setTimeout(() => {
-//       setTransactions(data);
-//     }, 3000);
-//   }, []);
-
-useEffect(() => {
-	const getTransactions = async () => {
-		const {data, status} = await transactionsAPI.all()
-		if(status ===200){
-			setTransactions(data.map (transaction =>{
-				return {
-					...transaction, 
-					type: transaction.type.value,
-					category: transaction.category.value,
-				};
-			})
-			);
-		}
-	};
-	getTransactions();
+  useEffect(() => {
+    const getTransactions = async () => {
+      try{
+        const { data, status } = await transactionsAPI.all();
+      if (status === 200) {
+        setTransactions(data);
+      }
+      } catch(error) {
+        console.log("error", error)
+      }
+    };
+    getTransactions();
   }, []);
 
   useEffect(() => {
@@ -143,15 +143,15 @@ useEffect(() => {
     filterByName(search);
   }, [search]);
 
-  useEffect(() => { 
-	console.log("useEffect categories: ", categories);
+  useEffect(() => {
+    console.log("useEffect categories: ", categories);
     filterByCategory();
   }, [categories]);
 
- useEffect(()=> {
-	 console.log("useEffectTypes: ", types);
-	 filterByType();
- }, [types]);
+  useEffect(() => {
+    console.log("useEffectTypes: ", types);
+    filterByType();
+  }, [types]);
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -159,12 +159,21 @@ useEffect(() => {
     minimumFractionDigits: 2,
   });
 
-  const handleDelete = (id) => {
-    console.log("deleting row", id);
-    const _transactions = [...transactions].filter(
-      (transaction) => transaction.id !== id
-    );
-    setTransactions(_transactions);
+  const handleDelete = async (id) => {
+    try {
+      const { data, status } = await transactionsAPI.delete(id);
+      console.log("deleting row", id);
+      console.log("data: ", data);
+      console.log("status: ", status);
+      if (status === 200) {
+        const _transactions = [...transactions].filter(
+          (transaction) => transaction.id !== id
+        );
+        setTransactions(_transactions);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleEdit = (id) => {
@@ -176,26 +185,72 @@ useEffect(() => {
       return transaction.id === id;
     });
     // 3. setSelectedTransaction to element found, set state for it
-    setSelectedTransaction(foundTransaction);
+    setSelectedTransaction({
+      ...foundTransaction, 
+      type:foundTransaction.type.value,
+      category:foundTransaction.category.value,
+     });
     // 4. Open Drawer with this transactions' data
     setOpenDrawer(true);
   };
 
-  const addTransactionToList = (data) => {
-    setTransactions([...transactions, { ...data }]);
+  const addTransactionToList = async (transaction) => {
+    const newTransaction = {
+      ...transaction,
+      category: availableCategories.find(
+        (cat) => cat.value === transaction.category
+      )?.id,
+      type: availableTypes.find((cat) => cat.value === transaction.type)?.id,
+    };
+    console.log("new Transaction: ", newTransaction);
+    
+    try {
+      const { data, status } = await transactionsAPI.create(newTransaction);
+      console.log("Status: ", status);
+      console.log("Data: ", data);
+      if (status === 200) {
+        setTransactions([...transactions, { ...data }]);
+        console.log("saved to the API", newTransaction);
+      }
+    } catch (err) {
+      console.log("err in addTransaction", err);
+    }
   };
 
-  const editTransaction = (data) => {
-    // 1. Find transaction index to edit in array
-    const transactionIndex = transactions.findIndex(
-      (transaction) => transaction.id === data.id
-    );
-    // 2. Make copy of this transaction's state
-    const _transactions = [...transactions];
-    // 3. Replace transaction
-    _transactions[transactionIndex] = data;
-    // 4. Update transaction in array
-    setTransactions(_transactions);
+  // let newTransaction = {
+  //   "name": "test",
+  //   "amount": 4,
+  //   "date": "2021-11-17",
+  //   "category": 1,
+  //   "type": 1
+  // };
+
+  const editTransaction = async (transaction) => {
+    const updatedTransaction = {
+      ...transaction,
+      category: availableCategories.find(
+        (cat) => cat.value === transaction.category
+      )?.id,
+      type: availableTypes.find((cat) => cat.value === transaction.type)?.id,
+    };
+
+    try {
+      const { data, status } = await transactionsAPI.update(updatedTransaction);
+      if (status === 200) {
+        // 1. Find transaction index to edit in array
+        const transactionIndex = transactions.findIndex(
+          (tr) => tr.id === transaction.id
+        );
+        // 2. Make copy of this transaction's state
+        const _transactions = [...transactions];
+        // 3. Replace transaction
+        _transactions[transactionIndex] = data;
+        // 4. Update transaction in array
+        setTransactions(_transactions);
+      }
+    } catch (err) {
+      console.log("error", err);
+    }
   };
 
   const filterByName = (search) => {
@@ -208,34 +263,36 @@ useEffect(() => {
   };
 
   const filterByCategory = () => {
-	const checked = Object.keys(categories).filter(
-		(category) => categories[category].checked
-		);	
-		if (checked.length === 0) {
-			console.log("original array ", transactions);
-			setFilteredTransactions(transactions);
-		} else {
-			const _filteredTransactions = transactions.filter((transaction) => {
-				return categories[transaction.category].checked === true;
-			});
-			setFilteredTransactions(_filteredTransactions);
-			console.log("_filteredTransactions: ", _filteredTransactions);
-		}
-	};
+    console.log("Categories are:  ", categories);
+    const checked = Object.keys(categories).filter(
+      (category) => { return categories[category].checked}
+    );
+    console.log("Checked: ", checked);
+    if (checked.length === 0) {
 
-	const filterByType = () => {
-		const checked = Object.keys(types).filter(
-			(type) => types[type].checked
-		);
-		if (checked.length === 0) {
-			setFilteredTransactions(transactions);
-		} else {
-			const _filteredTransactions = transactions.filter((transaction) => {
-				return types[transaction.type].checked === true;
-			});
-			setFilteredTransactions(_filteredTransactions);
-		}
-	};
+      setFilteredTransactions(transactions);
+    } else {
+      console.log("No Category checked, original array:  ", transactions);
+      const _filteredTransactions = transactions.filter((transaction) => {
+        return categories[transaction.category.value].checked=== true;
+      });
+      setFilteredTransactions(_filteredTransactions);
+      console.log("_filteredTransactions: ", _filteredTransactions);
+    }
+  };
+
+  const filterByType = () => {
+    const checked = Object.keys(types).filter(
+      (type) => {return types[type].checked});
+    if (checked.length === 0) {
+      setFilteredTransactions(transactions);
+    } else {
+      const _filteredTransactions = transactions.filter((transaction) => {
+        return types[transaction.type.value].checked === true;
+      });
+      setFilteredTransactions(_filteredTransactions);
+    }
+  };
   return (
     <Container>
       <ActionsWrapper>
@@ -278,16 +335,16 @@ useEffect(() => {
                       <Checkbox
                         checked={categories[category].checked}
                         onChange={(event) => {
-							const newCategoriesState ={
-								...categories,
-								[category] : {
-									...categories[category],
-									checked: event.target.checked,
-								},
-							};
-							console.log(newCategoriesState, "newCatState")
-							setCategories(newCategoriesState);
-						}}
+                          const newCategoriesState = {
+                            ...categories,
+                            [category]: {
+                              ...categories[category],
+                              checked: event.target.checked,
+                            },
+                          };
+                          console.log(newCategoriesState, "newCatState");
+                          setCategories(newCategoriesState);
+                        }}
                         name={category}
                         sx={{
                           color: purple[50],
@@ -302,7 +359,7 @@ useEffect(() => {
                 </FormGroup>
               );
             })}
-			<h3>Type</h3>
+          <h3>Type</h3>
           {types &&
             Object.keys(types).map((type) => {
               return (
@@ -312,16 +369,16 @@ useEffect(() => {
                       <Checkbox
                         checked={types[type].checked}
                         onChange={(event) => {
-							const newTypesState ={
-								...types,
-								[type] : {
-									...types[type],
-									checked: event.target.checked,
-								},
-							};
-							console.log(newTypesState, "newTypeState")
-							setTypes(newTypesState);
-						}}
+                          const newTypesState = {
+                            ...types,
+                            [type]: {
+                              ...types[type],
+                              checked: event.target.checked,
+                            },
+                          };
+                          console.log(newTypesState, "newTypeState");
+                          setTypes(newTypesState);
+                        }}
                         name={type}
                         sx={{
                           color: purple[50],
@@ -352,13 +409,16 @@ useEffect(() => {
               {/* destructuring the transactions' object properties */}
               {filteredTransactions.map(
                 ({ id, date, name, category, type, amount }) => {
+                  // console.log("category: ", category);
                   return (
                     <tr key={id}>
                       <TableCell>{date}</TableCell>
                       <TableCell>{name}</TableCell>
-                      <TableCell>{category}</TableCell>
+                      <TableCell>{category.value}</TableCell>
                       <TableCell>
-                        <Amount type={type}>{formatter.format(amount)}</Amount>
+                        <Amount type={type.value}>
+                          {formatter.format(amount)}
+                          </Amount>
                       </TableCell>
                       <TableCell>
                         <EditIcon
