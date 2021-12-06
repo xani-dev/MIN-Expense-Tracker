@@ -21,6 +21,8 @@ import { purple } from "@mui/material/colors";
 
 import { TransactionDrawer } from "./Drawer";
 
+import { MinContext } from "../Context";
+
 const Table = styled.table`
   width: 80%;
   text-align: left;
@@ -73,21 +75,22 @@ const AVAILABLE_MODES = {
   read: "read",
 };
 
-const availableCategories = [
-	{ value: "clothing", label: "Clothing", id: 1},
-	{ value: "eating_out", label: "Eating out", id: 2 },
-	{ value: "gadgets", label: "Gadgets", id: 3 },
-	{ value: "groceries", label: "Groceries", id: 4 },
-  { value: "income", label: "Income", id: 5 },
-  { value: "other", label: "Other", id: 6 },
-	{ value: "transportation", label: "Transportation", id: 7 },
+// availableCategories & availableTypes are used when using Strapi
+// const availableCategories = [
+// 	{ value: "clothing", label: "Clothing", id: 1},
+// 	{ value: "eating_out", label: "Eating out", id: 2 },
+// 	{ value: "gadgets", label: "Gadgets", id: 3 },
+// 	{ value: "groceries", label: "Groceries", id: 4 },
+//   { value: "income", label: "Income", id: 5 },
+//   { value: "other", label: "Other", id: 6 },
+// 	{ value: "transportation", label: "Transportation", id: 7 },
 	
-];
+// ];
 
-const availableTypes = [
-	{ value: "expense", label: "Expense", id: 1 },
-	{ value: "income", label: "Income", id: 2 },
-];
+// const availableTypes = [
+// 	{ value: "expense", label: "Expense", id: 1 },
+// 	{ value: "income", label: "Income", id: 2 },
+// ];
 
 const TransactionsLists = () => {
   const [transactions, setTransactions] = useState([]);
@@ -97,15 +100,16 @@ const TransactionsLists = () => {
   const [search, setSearch] = useState("");
   const [filteredTransactions, setFilteredTransactions] = useState([]);
 
-  const [categories, setCategories] = useState(
-    availableCategories.reduce((acc, category) => {
+  const ctx = React.useContext(MinContext);
+    const [categories, setCategories] = useState(
+    ctx.categories.reduce((acc, category) => {
       acc[category.value] = { label: category.label, checked: false };
       return acc;
     }, {})
   );
 
   const [types, setTypes] = useState(
-    availableTypes.reduce((acc, type) => {
+    ctx.types.reduce((acc, type) => {
       acc[type.value] = { label: type.label, checked: false };
       return acc;
     }, {})
@@ -197,10 +201,10 @@ const TransactionsLists = () => {
   const addTransactionToList = async (transaction) => {
     const newTransaction = {
       ...transaction,
-      category: availableCategories.find(
+      category: ctx.categories.find(
         (cat) => cat.value === transaction.category
-      )?.id,
-      type: availableTypes.find((cat) => cat.value === transaction.type)?.id,
+      ),
+      type: ctx.types.find((cat) => cat.value === transaction.type),
     };
     console.log("new Transaction: ", newTransaction);
     
@@ -208,7 +212,7 @@ const TransactionsLists = () => {
       const { data, status } = await transactionsAPI.create(newTransaction);
       console.log("Status: ", status);
       console.log("Data: ", data);
-      if (status === 200) {
+      if (status === 201) {
         setTransactions([...transactions, { ...data }]);
         console.log("saved to the API", newTransaction);
       }
@@ -228,10 +232,10 @@ const TransactionsLists = () => {
   const editTransaction = async (transaction) => {
     const updatedTransaction = {
       ...transaction,
-      category: availableCategories.find(
+      category: ctx.categories.find(
         (cat) => cat.value === transaction.category
-      )?.id,
-      type: availableTypes.find((cat) => cat.value === transaction.type)?.id,
+      ),
+      type: ctx.types.find((cat) => cat.value === transaction.type),
     };
 
     try {

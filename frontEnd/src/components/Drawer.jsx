@@ -16,6 +16,8 @@ import FormLabel from '@mui/material/FormLabel';
 
 import { Formik, Form } from "formik";
 
+import { MinContext } from "../Context";
+
 const FormWrapper = styled.div`
 	padding: 16px;
 	width: 380px;
@@ -39,23 +41,13 @@ const ActionsWrapper = styled.div`
 	justify-content: space-evenly;
 `;
 
-const categories = [
-	{ value: "clothing", label: "Clothing", id: 1},
-	{ value: "eating_out", label: "Eating out", id: 2 },
-	{ value: "gadgets", label: "Gadgets", id: 3 },
-	{ value: "groceries", label: "Groceries", id: 4 },
-	{ value: "transportation", label: "Transportation", id: 5 },
-	{ value: "income", label: "Income", id: 6 },
-	{ value: "other", label: "Other", id: 7 },
-];
 
-const types = [
-	{ value: "expense", label: "Expense", id: 1 },
-	{ value: "income", label: "Income", id: 2 },
-];
 
 const TransactionDrawer = (props) => {
     const {mode, open, onClose, transaction, addTransaction, editTransaction } = props
+
+	const {categories, types} = React.useContext(MinContext);	
+	
     const emptyFormInitialValues = {
         name: "",
         amount: "",

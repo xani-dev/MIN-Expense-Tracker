@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "./App.css";
 import { NavBar } from "./components/NavBar";
 import { TransactionsLists } from "./components/TransactionList";
+import { MinProvider } from "./Context";
 
 const theme = createTheme({
 	palette: {
@@ -49,12 +50,14 @@ const theme = createTheme({
 
 function App() {
 	return (
+		<MinProvider>
 		<ThemeProvider theme={theme}>
 			<div className="layout">
 				<NavBar />
 				<TransactionsLists />
 			</div>
 		</ThemeProvider>
+		</MinProvider>
 	);
 }
 
