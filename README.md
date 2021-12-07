@@ -39,11 +39,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 - [x] ~~Create Filters by Type and Category~~ Nov 10th, 2021
 - [x] ~~Integrate with Strapi~~ Nov 15th, 2021
 - [x] ~~Restructuring for LowDB~~ Dec 5th, 20201 
-<<<<<<< HEAD
 - [x] ~~Add Login Module~~ Dec 6th, 2021
-=======
-- [x] ~~Login Feature~~ Dec 6th, 2021
->>>>>>> 7ebc22e57f6c19892a105a9c7944a3e9a663d468
 - [ ] Add a confirmation dialog for deleting transactions
 
 
