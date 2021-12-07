@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "./App.css";
 import { NavBar } from "./components/NavBar";
 import { TransactionsLists } from "./components/TransactionList";
 import { MinProvider } from "./Context";
+import { Login } from "./components/Login";
 
 const theme = createTheme({
 	palette: {
@@ -49,13 +50,18 @@ const theme = createTheme({
 });
 
 function App() {
+	const [currentUser, setCurrentUser] = useState(undefined);
 	return (
 		<MinProvider>
 		<ThemeProvider theme={theme}>
+			{ currentUser ? ( 
 			<div className="layout">
 				<NavBar />
 				<TransactionsLists />
 			</div>
+			 ) : ( 
+			 <Login setCurrentUser = {setCurrentUser} />
+			)}
 		</ThemeProvider>
 		</MinProvider>
 	);
