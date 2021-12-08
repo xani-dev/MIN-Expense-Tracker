@@ -40,6 +40,8 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 - [x] ~~Integrate with Strapi~~ Nov 15th, 2021
 - [x] ~~Restructuring for LowDB~~ Dec 5th, 20201 
 - [x] ~~Add Login Module~~ Dec 6th, 2021
+- [x] ~~Firebase Integration~~ Dec 8th, 2021
+- [ ] Mongo Integtration
 - [ ] Add a confirmation dialog for deleting transactions
 
 

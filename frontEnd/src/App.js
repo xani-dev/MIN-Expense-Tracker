@@ -3,8 +3,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "./App.css";
 import { NavBar } from "./components/NavBar";
 import { TransactionsLists } from "./components/TransactionList";
-import { MinProvider } from "./Context";
-import { Login } from "./components/Login";
+import { MinProvider } from "./ctx/Context";
+import { Login } from "./components/Auth/Login";
+import { SignUp } from "./components/Auth/SignUp";
+import { AuthProvider } from "./ctx/AuthContext/Auth";
 
 const theme = createTheme({
 	palette: {
@@ -50,8 +52,9 @@ const theme = createTheme({
 });
 
 function App() {
-	const [currentUser, setCurrentUser] = useState(undefined);
+	const currentUser = false;
 	return (
+		<AuthProvider>
 		<MinProvider>
 		<ThemeProvider theme={theme}>
 			{ currentUser ? ( 
@@ -60,10 +63,12 @@ function App() {
 				<TransactionsLists />
 			</div>
 			 ) : ( 
-			 <Login setCurrentUser = {setCurrentUser} />
+				//  < SignUp />
+			 <Login />
 			)}
 		</ThemeProvider>
 		</MinProvider>
+		</AuthProvider>
 	);
 }
 

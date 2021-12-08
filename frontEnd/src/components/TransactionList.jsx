@@ -21,7 +21,7 @@ import { purple } from "@mui/material/colors";
 
 import { TransactionDrawer } from "./Drawer";
 
-import { MinContext } from "../Context";
+import { MinContext } from "../ctx/Context";
 
 const Table = styled.table`
   width: 80%;
@@ -69,11 +69,11 @@ const Main = styled.div`
   padding-top: 32px;
 `;
 
-const AVAILABLE_MODES = {
-  add: "add",
-  edit: "edit",
-  read: "read",
-};
+// const AVAILABLE_MODES = {
+//   add: "add",
+//   edit: "edit",
+//   read: "read",
+// };
 
 // availableCategories & availableTypes are used when using Strapi
 // const availableCategories = [

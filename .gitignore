@@ -8,6 +8,9 @@ node_modules
 # Strapi
 min-tracker
 
+# Firebase Config
+/frontEnd/src/firebaseConfig.js
+
 # testing
 /coverage
 

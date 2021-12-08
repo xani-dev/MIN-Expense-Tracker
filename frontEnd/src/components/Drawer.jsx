@@ -16,7 +16,7 @@ import FormLabel from '@mui/material/FormLabel';
 
 import { Formik, Form } from "formik";
 
-import { MinContext } from "../Context";
+import { MinContext } from "../ctx/Context";
 
 const FormWrapper = styled.div`
 	padding: 16px;
