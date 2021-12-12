@@ -1,6 +1,10 @@
-import React from "react";
+import React, {useContext} from "react";
 import logo from "./../min.png";
 import styled, { css } from "styled-components";
+import {Link, useLocation, useNavigate } from "react-router-dom";
+
+
+import { AuthContext } from "../ctx/AuthContext/Auth";
 
 const Container = styled.div`
   border-right: 1px solid white;
@@ -16,20 +20,17 @@ const List = styled.ul`
 const Item = styled.li`
   padding: 10px 20px;
   margin-bottom: 8px;
+  
   ${(props) =>
     props.active &&
     css`
       background: #9c709e;
       font-weight: bold;
     `};
-  ${(props) =>
-    props.disabled &&
-    css`
-      background: #778899;
+    a{
+      text-decoration: none;
       color: #cdcdcd;
-      font-weight: bold;
-      cursor: not-allowed;
-    `};
+    }
 `;
 
 const Logo = styled.img`
@@ -37,17 +38,44 @@ const Logo = styled.img`
   width: 150px;
 `;
 
+const links = [
+  { label: "Dashboard", url: "/dasboard" },
+  { label: "Calendar", url: "/calendar" },
+  { label: "Transactions", url: "/transactions" },
+  { label: "Settings", url: "/settings" },
+]
+
 const NavBar = () => {
+  const location = useLocation();
+  const history = useNavigate();
+
+  const{firebase, setUser} = useContext(AuthContext);
+  const handleLogout = () => {
+    console.log("Ciao!");
+    firebase
+    .auth()
+    .signOut()
+    .then(()=>{
+      setUser(null);
+      history('/');
+    })
+  };
   return (
     <Container>
       <Logo src={logo} className="App-logo" alt="App Logo" />
       <List>
-        <Item active>Dashboard</Item>
-        <Item>Calendar</Item>
-        <Item disabled>Transactions</Item>
+        {links.map((link) => {
+          const active = location.pathname ===link.url;
+          return (
+            <Item active={active}>
+            <Link to={`${link.url}`}>{link.label}</Link>
+            </Item>
+          );
+        })}
+        <Item onClick={handleLogout}>Logout</Item>
+
       </List>
     </Container>
   );
 };
-
 export { NavBar };
