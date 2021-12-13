@@ -1,12 +1,15 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import firebase from "../../ctx/AuthContext/firebaseConfig";
+import { useNavigate } from "react-router-dom";
+
 
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { AuthContext } from "../../ctx/AuthContext/Auth";
+import { authAPI } from "../../services/auth";
 
 const FormContainer = styled.div`
   display: flex;
@@ -21,6 +24,7 @@ const FormContainer = styled.div`
 `;
 
 const SignUp = () => {
+  const history = useNavigate();
   const userSchema = Yup.object().shape({
     email: Yup.string().required("Required Field"),
     password: Yup.string().required("Required Field"),
@@ -30,19 +34,28 @@ const SignUp = () => {
 
   const handleSubmit = (values) => {
     console.log("submitted: ", values);
-    const { email, password } = values;
+    try {
+      const {status, data} = await authAPI.signup(values);
+      if (status ===200){
+        setUser(user);
+        history('/');
+      } else {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error)
+    }
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        setUser(user);
+        
         // ...
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+       
         // ..
       });
   };

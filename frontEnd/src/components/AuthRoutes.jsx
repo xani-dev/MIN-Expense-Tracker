@@ -15,13 +15,8 @@ const AppRoutes = () => {
         <Router>
           <NavBar />
           <Routes>
-            <Route path="/" element={<TransactionsLists />} />
-            {/* <Route path="/dashboard">
-            <Dashboard />
-          </Route>
-          <Route path="/settings">
-            <Settings />
-          </Route> */}
+            <Route exact path="/" element={<TransactionsLists />} />
+           
           </Routes>
         </Router>
       </div>
@@ -30,8 +25,8 @@ const AppRoutes = () => {
   return (
   <Router>
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/" element={<SignUp />} />
+      <Route exact path="/" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   </Router>
   )

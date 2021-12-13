@@ -42,14 +42,17 @@ const Login = () => {
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
+      user.getIdToken().then((token) =>{
+        console.log("user Token: ", token)
+        localStorage.setItem("token", token);
+      });
       console.log(user);
       setUser(user)
+
       // ...
     })
     .catch((error) => {
       console.log(error.message)
-      const errorCode = error.code;
-      const errorMessage = error.message;
     });
   
   };
