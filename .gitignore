@@ -9,8 +9,8 @@ node_modules
 min-tracker
 
 # Firebase Config
-/frontEnd/src/firebaseConfig.js
-
+/frontEnd/src/ctx/AuthContext/firebaseConfig.js
+/backEnd/serviceAccountKey.json
 # testing
 /coverage
 
@@ -24,6 +24,7 @@ min-tracker
 .env.development.local
 .env.test.local
 .env.production.local
+
 
 npm-debug.log*
 yarn-debug.log*
