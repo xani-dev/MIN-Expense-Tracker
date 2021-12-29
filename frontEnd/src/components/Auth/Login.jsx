@@ -43,10 +43,10 @@ const Login = () => {
       // Signed in
       const user = userCredential.user;
       user.getIdToken().then((token) =>{
-        console.log("user Token: ", token)
+        // console.log("user Token: ", token)
         localStorage.setItem("token", token);
       });
-      console.log(user);
+      // console.log(user);
       setUser(user)
 
       // ...

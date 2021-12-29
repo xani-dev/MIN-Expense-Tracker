@@ -64,7 +64,7 @@ const TransactionDrawer = (props) => {
 		category: Yup.string().required("Required field"),
 		type: Yup.string().required("Required field"),
 	});
-
+	
 return (
     <Drawer
 					anchor="right"
@@ -74,6 +74,7 @@ return (
 					<FormWrapper>
 						<h2>{mode === 'add' ? "New" : "Edit"} Transaction</h2>
 						<Formik
+							
 							initialValues={ 
 								mode === 'add' ? emptyFormInitialValues : transaction
 							}
@@ -82,8 +83,13 @@ return (
 								console.log("Values submitted: " , values);
 								const dbValues = {
 									...values,
-									category:categories.find(cat => cat.value === values.category).value,
-									type:types.find(typ => typ.value === values.type).value,
+									// OLD
+									// category:categories.find(cat => cat.value === values.category).value,
+									// type:types.find(typ => typ.value === values.type).value,
+
+									category:Object.keys(categories).find(cat => cat.value === values.category),
+									type:Object.keys(types).find(typ => typ.value === values.type),
+								
 								};
 								console.log("dbValues: ", dbValues);
 								mode === 'add' 
@@ -120,7 +126,11 @@ return (
 												type="date"
 												name="date"
 												label=""
-												value={values.date}
+												value=
+												{new Intl.DateTimeFormat("fr-CA").format(
+													new Date(values.date)
+												  )}
+												//{values.date}
 												onChange={handleChange}
 												error={touched.date && Boolean(errors.date)}
 												helperText={touched.date && errors.date}
@@ -146,11 +156,11 @@ return (
 													value={values.category}
 													onChange={handleChange}
 												>
-													{categories.map((category) => (
+													{Object.keys(categories).map((category) => (
 														<FormControlLabel
-															value={category.value}
+															value={category}
 															control={<Radio />}
-															label={category.label}
+															label={categories[category]}
 														/>
 													))}
 												</RadioGroup>
@@ -164,11 +174,11 @@ return (
 													value={values.type}
 													onChange={handleChange}
 												>
-													{types.map(({ value, label }) => (
+													{Object.keys(types).map((type) => (
 														<FormControlLabel
-															value={value}
+															value={type}
 															control={<Radio />}
-															label={label}
+															label={types[type]}
 														/>
 													))}
 												</RadioGroup>

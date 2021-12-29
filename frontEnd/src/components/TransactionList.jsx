@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
 
-// Getting Data from either data file or Strapi
-//import data from "../data";
 import { transactionsAPI } from "../services/transactions";
 
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -69,48 +67,26 @@ const Main = styled.div`
   padding-top: 32px;
 `;
 
-// const AVAILABLE_MODES = {
-//   add: "add",
-//   edit: "edit",
-//   read: "read",
-// };
-
-// availableCategories & availableTypes are used when using Strapi
-// const availableCategories = [
-// 	{ value: "clothing", label: "Clothing", id: 1},
-// 	{ value: "eating_out", label: "Eating out", id: 2 },
-// 	{ value: "gadgets", label: "Gadgets", id: 3 },
-// 	{ value: "groceries", label: "Groceries", id: 4 },
-//   { value: "income", label: "Income", id: 5 },
-//   { value: "other", label: "Other", id: 6 },
-// 	{ value: "transportation", label: "Transportation", id: 7 },
-	
-// ];
-
-// const availableTypes = [
-// 	{ value: "expense", label: "Expense", id: 1 },
-// 	{ value: "income", label: "Income", id: 2 },
-// ];
-
 const TransactionsLists = () => {
   const [transactions, setTransactions] = useState([]);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [mode, setMode] = useState("add");
   const [selectedTransaction, setSelectedTransaction] = useState({});
   const [search, setSearch] = useState("");
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState({});
 
   const ctx = React.useContext(MinContext);
-    const [categories, setCategories] = useState(
-    ctx.categories.reduce((acc, category) => {
-      acc[category.value] = { label: category.label, checked: false };
+
+  const [categories, setCategories] = useState(
+    Object.keys(ctx.categories).reduce((acc, category) => {
+      acc[category] = { label: ctx.categories[category], checked: false };
       return acc;
     }, {})
   );
 
   const [types, setTypes] = useState(
-    ctx.types.reduce((acc, type) => {
-      acc[type.value] = { label: type.label, checked: false };
+    Object.keys(ctx.types).reduce((acc, type) => {
+      acc[type] = { label: ctx.types[type], checked: false };
       return acc;
     }, {})
   );
@@ -126,13 +102,13 @@ const TransactionsLists = () => {
 
   useEffect(() => {
     const getTransactions = async () => {
-      try{
+      try {
         const { data, status } = await transactionsAPI.all();
-      if (status === 200) {
-        setTransactions(data);
-      }
-      } catch(error) {
-        console.log("error", error)
+        if (status === 200) {
+          setTransactions(data);
+        }
+      } catch (error) {
+        console.log("error", error);
       }
     };
     getTransactions();
@@ -143,17 +119,14 @@ const TransactionsLists = () => {
   }, [transactions]);
 
   useEffect(() => {
-    console.log("useEffect search: ", search);
     filterByName(search);
   }, [search]);
 
   useEffect(() => {
-    console.log("useEffect categories: ", categories);
     filterByCategory();
   }, [categories]);
 
   useEffect(() => {
-    console.log("useEffectTypes: ", types);
     filterByType();
   }, [types]);
 
@@ -166,12 +139,11 @@ const TransactionsLists = () => {
   const handleDelete = async (id) => {
     try {
       const { data, status } = await transactionsAPI.delete(id);
-      console.log("deleting row", id);
       console.log("data: ", data);
       console.log("status: ", status);
       if (status === 200) {
         const _transactions = [...transactions].filter(
-          (transaction) => transaction.id !== id
+          (transaction) => transaction._id !== id
         );
         setTransactions(_transactions);
       }
@@ -186,14 +158,14 @@ const TransactionsLists = () => {
     setMode("edit");
     // 2. Find selected transaction in Array
     const foundTransaction = transactions.find((transaction) => {
-      return transaction.id === id;
+      return transaction._id === id;
     });
     // 3. setSelectedTransaction to element found, set state for it
     setSelectedTransaction({
-      ...foundTransaction, 
-      type:foundTransaction.type.value,
-      category:foundTransaction.category.value,
-     });
+      ...foundTransaction,
+      type: foundTransaction.type,
+      category: foundTransaction.category,
+    });
     // 4. Open Drawer with this transactions' data
     setOpenDrawer(true);
   };
@@ -201,13 +173,20 @@ const TransactionsLists = () => {
   const addTransactionToList = async (transaction) => {
     const newTransaction = {
       ...transaction,
-      category: ctx.categories.find(
+
+      //OLD
+      // category: ctx.categories.find(
+      //   (cat) => cat.value === transaction.category
+      // ),
+      // type: ctx.types.find((cat) => cat.value === transaction.type),
+
+      category: Object.keys(ctx.categories).find(
         (cat) => cat.value === transaction.category
       ),
-      type: ctx.types.find((cat) => cat.value === transaction.type),
+      type: Object.keys(ctx.types).find((cat) => cat.value === transaction.type),
     };
     console.log("new Transaction: ", newTransaction);
-    
+
     try {
       const { data, status } = await transactionsAPI.create(newTransaction);
       console.log("Status: ", status);
@@ -221,25 +200,9 @@ const TransactionsLists = () => {
     }
   };
 
-  // let newTransaction = {
-  //   "name": "test",
-  //   "amount": 4,
-  //   "date": "2021-11-17",
-  //   "category": 1,
-  //   "type": 1
-  // };
-
   const editTransaction = async (transaction) => {
-    const updatedTransaction = {
-      ...transaction,
-      category: ctx.categories.find(
-        (cat) => cat.value === transaction.category
-      ),
-      type: ctx.types.find((cat) => cat.value === transaction.type),
-    };
-
     try {
-      const { data, status } = await transactionsAPI.update(updatedTransaction);
+      const { data, status } = await transactionsAPI.update(transaction);
       if (status === 200) {
         // 1. Find transaction index to edit in array
         const transactionIndex = transactions.findIndex(
@@ -258,8 +221,6 @@ const TransactionsLists = () => {
   };
 
   const filterByName = (search) => {
-    console.log("Filter by name search: ", search);
-
     const _filteredTransactions = transactions.filter((transaction) => {
       return transaction.name.toLowerCase().includes(search.toLowerCase());
     });
@@ -267,18 +228,15 @@ const TransactionsLists = () => {
   };
 
   const filterByCategory = () => {
-    console.log("Categories are:  ", categories);
-    const checked = Object.keys(categories).filter(
-      (category) => { return categories[category].checked}
-    );
-    console.log("Checked: ", checked);
+    const checked = Object.keys(categories).filter((category) => {
+      return categories[category].checked;
+    });
     if (checked.length === 0) {
-
       setFilteredTransactions(transactions);
     } else {
       console.log("No Category checked, original array:  ", transactions);
       const _filteredTransactions = transactions.filter((transaction) => {
-        return categories[transaction.category.value].checked=== true;
+        return categories[transaction.category].checked === true;
       });
       setFilteredTransactions(_filteredTransactions);
       console.log("_filteredTransactions: ", _filteredTransactions);
@@ -286,13 +244,14 @@ const TransactionsLists = () => {
   };
 
   const filterByType = () => {
-    const checked = Object.keys(types).filter(
-      (type) => {return types[type].checked});
+    const checked = Object.keys(types).filter((type) => {
+      return types[type].checked;
+    });
     if (checked.length === 0) {
       setFilteredTransactions(transactions);
     } else {
       const _filteredTransactions = transactions.filter((transaction) => {
-        return types[transaction.type.value].checked === true;
+        return types[transaction.type].checked === true;
       });
       setFilteredTransactions(_filteredTransactions);
     }
@@ -398,7 +357,7 @@ const TransactionsLists = () => {
               );
             })}
         </FilterContainer>
-        {transactions.length > 0 ? (
+        {transactions && transactions.length > 0 ? (
           <Table>
             <thead>
               <tr>
@@ -411,38 +370,43 @@ const TransactionsLists = () => {
             </thead>
             <tbody>
               {/* destructuring the transactions' object properties */}
-              {filteredTransactions.map(
-                ({ id, date, name, category, type, amount }) => {
-                  // console.log("category: ", category);
-                  return (
-                    <tr key={id}>
-                      <TableCell>{date}</TableCell>
-                      <TableCell>{name}</TableCell>
-                      <TableCell>{category.value}</TableCell>
-                      <TableCell>
-                        <Amount type={type.value}>
-                          {formatter.format(amount)}
+              {filteredTransactions &&
+                filteredTransactions.map(
+                  ({ _id, date, name, category, type, amount }) => {
+                    //console.log("category: ", category , " id: " , id);
+                    return (
+                      <tr key={_id}>
+                        <TableCell>
+                          {new Intl.DateTimeFormat("en-US").format(
+                            new Date(date)
+                          )}
+                        </TableCell>
+                        <TableCell>{name}</TableCell>
+                        <TableCell>{ctx.categories[category]}</TableCell>
+                        <TableCell>
+                          <Amount type={type}>
+                            {formatter.format(amount)}
                           </Amount>
-                      </TableCell>
-                      <TableCell>
-                        <EditIcon
-                          style={{ marginRight: "16px", cursor: "pointer" }}
-                          onClick={() => {
-                            console.log("Editing row #" + id);
-                            handleEdit(id);
-                          }}
-                        />
-                        <DeleteForeverIcon
-                          style={{ color: "B77A9E", cursor: "pointer" }}
-                          onClick={() => {
-                            handleDelete(id);
-                          }}
-                        />
-                      </TableCell>
-                    </tr>
-                  );
-                }
-              )}
+                        </TableCell>
+                        <TableCell>
+                          <EditIcon
+                            style={{ marginRight: "16px", cursor: "pointer" }}
+                            onClick={() => {
+                              console.log("Editing row #" + _id);
+                              handleEdit(_id);
+                            }}
+                          />
+                          <DeleteForeverIcon
+                            style={{ color: "B77A9E", cursor: "pointer" }}
+                            onClick={() => {
+                              handleDelete(_id);
+                            }}
+                          />
+                        </TableCell>
+                      </tr>
+                    );
+                  }
+                )}
             </tbody>
           </Table>
         ) : (

@@ -43,6 +43,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 - [x] ~~Firebase Integration~~ Dec 8th, 2021
 - [x] ~~NavBar Routing and LogOut~~ Dec 12th, 2021
 - [x] ~~Mongo, Docker and Mongoose Integration~~ Dec 13th, 2021
+- [x] ~~Refactor for Mongo and Finalize CRUD~~ Dec 29th, 2021 
 - [ ] Add a confirmation dialog for deleting transactions
 
 

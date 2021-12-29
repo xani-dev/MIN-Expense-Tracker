@@ -1,3 +1,7 @@
+const { initializeApp } = require('firebase-admin/app');
+
+const admin = require("firebase-admin");
+
 const firebase = require("firebase/app").default;
 require('firebase/auth')
 
@@ -10,4 +14,11 @@ const app = firebase.initializeApp({
   appId: process.env.FIREBASE_APPID,
 });
 
-module.exports = { app };
+const serviceAccount = require ('../serviceAccountKey.json');
+
+initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://oktan-2e2b0.firebaseio.com"
+});
+
+module.exports = { app, admin, initializeApp };

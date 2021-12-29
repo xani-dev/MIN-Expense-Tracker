@@ -1,10 +1,7 @@
-const ldb = require('lowdb');
-const lodashID = require('lodash-id');
-const FileSync  = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('db.json');
-const db = ldb(adapter);
-
-db._.mixin(lodashID);
+require("dotenv").config();
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
+const Transaction = require('./models/Transaction')
 
 const strapiData = [
     {
@@ -259,26 +256,34 @@ const strapiData = [
       }
 ];
 
-db.defaults({ transactions: [] }).write();
-
-strapiData.forEach(transaction => {
+mongoose
+.connect(process.env.DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true, 
+})
+.then(async (x) => {
+  console.log(`Connected to Mongo! DB name: ${x.connections[0].name}`);
+  const transactions = strapiData.map(transaction => {
     if(transaction.category.value && transaction.type.value) {
-        db.get('transactions').insert({
-            name: transaction.name,
-            date: transaction.date,
-            amount: transaction.amount, 
-            category: {
-                id: transaction.category.id,
-                value: transaction.category.value,
-                label: transaction.category.label,
-            },
-            type: {
-                id: transaction.type.id,
-                value: transaction.type.value,
-                label: transaction.type.label,
-            },
-            created_at: new Date(),
-            updated_at: new Date(),
-        }).write()  
-    } 
-});
+      return {
+        name: transaction.name,
+        date: transaction.date,
+        amount: transaction.amount,
+        category: transaction.category.value,
+        type: transaction.type.value,
+        userId: mongoose.Types.ObjectId('61c24b24d35da1afeaaad376'),
+      };
+    }
+  }).filter(x=>x)
+  console.log (transactions);
+  try {
+    const createdTransactions = await Transaction.create(transactions);
+    console.log(
+      `Success! - ${createdTransactions.length} transactions created correctly`
+    ); 
+    mongoose.connection.close();
+  } catch (error) {
+    console.log(error); 
+  }
+})
+.catch((err)=> console.log(err));

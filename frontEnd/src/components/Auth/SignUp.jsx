@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import firebase from "../../ctx/AuthContext/firebaseConfig";
 import { useNavigate } from "react-router-dom";
 
 
@@ -32,32 +31,20 @@ const SignUp = () => {
 
   const { setUser } = useContext(AuthContext);
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     console.log("submitted: ", values);
     try {
       const {status, data} = await authAPI.signup(values);
       if (status ===200){
-        setUser(user);
+        setUser(data.user);
         history('/');
       } else {
-        console.log(error);
+        console.log(data);
       }
     } catch (error) {
       console.log(error)
     }
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        
-        // ...
-      })
-      .catch((error) => {
-       
-        // ..
-      });
+
   };
   return (
     <FormContainer>
