@@ -11,6 +11,7 @@ min-tracker
 # Firebase Config
 firebaseConfig.js
 serviceAccountKey.json
+
 # testing
 /coverage
 
