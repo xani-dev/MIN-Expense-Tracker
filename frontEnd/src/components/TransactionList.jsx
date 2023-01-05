@@ -173,19 +173,6 @@ const TransactionsLists = () => {
 	const addTransactionToList = async (transaction) => {
 		const newTransaction = {
 			...transaction,
-
-			//OLD
-			// category: ctx.categories.find(
-			//   (cat) => cat.value === transaction.category
-			// ),
-			// type: ctx.types.find((cat) => cat.value === transaction.type),
-
-			category: Object.keys(ctx.categories).find(
-				(cat) => cat.value === transaction.category
-			),
-			type: Object.keys(ctx.types).find(
-				(cat) => cat.value === transaction.type
-			),
 		};
 		console.log('new Transaction: ', newTransaction);
 
@@ -234,6 +221,7 @@ const TransactionsLists = () => {
 		const checked = Object.keys(categories).filter((category) => {
 			return categories[category].checked;
 		});
+
 		if (checked.length === 0) {
 			setFilteredTransactions(transactions);
 		} else {

@@ -54,6 +54,8 @@ const TransactionDrawer = (props) => {
 		category: '',
 		type: 'expense',
 	};
+
+	// Yup Validation
 	const transactionSchema = Yup.object().shape({
 		name: Yup.string().required('Required field'),
 		date: Yup.date()
@@ -72,20 +74,10 @@ const TransactionDrawer = (props) => {
 					initialValues={mode === 'add' ? emptyFormInitialValues : transaction}
 					validationSchema={transactionSchema}
 					onSubmit={(values, { setSubmitting }) => {
-						console.log('Values submitted: ', values);
 						const dbValues = {
 							...values,
-							// OLD
-							// category: categories.find((cat) => cat.value === values.category)
-							// 	.value,
-							// type: types.find((typ) => typ.value === values.type).value,
-
-							// category: Object.keys(categories).find(
-							// 	(cat) => cat.value === values.category
-							// ),
-							// type: Object.keys(types).find((typ) => typ.value === values.type),
 						};
-						console.log('dbValues: ', dbValues);
+						console.log('Values Submitted: ', dbValues);
 						mode === 'add'
 							? addTransaction(dbValues)
 							: editTransaction(dbValues);
