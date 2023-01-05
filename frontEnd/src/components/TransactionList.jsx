@@ -153,7 +153,7 @@ const TransactionsLists = () => {
 	};
 
 	const handleEdit = (id) => {
-		console.log('edit transaction #', id);
+		console.log('Editing transaction #', id);
 		// 1. Set mode to Edit
 		setMode('edit');
 		// 2. Find selected transaction in Array
@@ -205,7 +205,7 @@ const TransactionsLists = () => {
 	const editTransaction = async (transaction) => {
 		try {
 			const { data, status } = await transactionsAPI.update(transaction);
-			console.log('TRANSACTION', transaction);
+			console.log('TRANSACTION to edit', transaction);
 			if (status === 200) {
 				// 1. Find transaction index to edit in array
 				const transactionIndex = transactions.findIndex(
@@ -261,6 +261,7 @@ const TransactionsLists = () => {
 	};
 	return (
 		<Container>
+			{/* Search bar and +Transaction button */}
 			<ActionsWrapper>
 				<FormControl style={{ width: '75%' }}>
 					{/* search bar functionality */}
@@ -273,7 +274,7 @@ const TransactionsLists = () => {
 							</InputAdornment>
 						}
 						onChange={(event) => {
-							console.log(event.target.value);
+							console.log('searching for:', event.target.value);
 							setSearch(event.target.value);
 							filterByName(search);
 						}}
@@ -288,7 +289,10 @@ const TransactionsLists = () => {
 					+ Add Transaction
 				</Button>
 			</ActionsWrapper>
+
+			{/* Main Table */}
 			<Main>
+				{/* Filter Transaction */}
 				<FilterContainer>
 					<h2>Filters</h2>
 					<h3>Category</h3>
@@ -360,6 +364,7 @@ const TransactionsLists = () => {
 							);
 						})}
 				</FilterContainer>
+
 				{transactions && transactions.length > 0 ? (
 					<Table>
 						<thead>
@@ -420,7 +425,10 @@ const TransactionsLists = () => {
 				<TransactionDrawer
 					mode={mode}
 					open={openDrawer}
-					onClose={() => setOpenDrawer(false)}
+					onClose={function () {
+						setOpenDrawer(false);
+						setMode('add');
+					}}
 					transaction={selectedTransaction}
 					addTransaction={addTransactionToList}
 					editTransaction={editTransaction}

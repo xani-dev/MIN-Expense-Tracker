@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { color } from '@mui/system';
 
 const FormContainer = styled.div`
 	display: flex;
@@ -22,19 +21,19 @@ const FormContainer = styled.div`
 `;
 
 const Logo = styled.img`
-	padding: 56px;
+	padding: 16px;
 	width: 150px;
 `;
 
-const userSchema = Yup.object().shape({
-	email: Yup.string().required('Required Field'),
-	password: Yup.string().required('Required Field'),
-});
-
 const Login = () => {
+	const userSchema = Yup.object().shape({
+		email: Yup.string().required('Required Field'),
+		password: Yup.string().required('Required Field'),
+	});
 	const { setUser, firebase } = useContext(AuthContext);
+
 	const handleSubmit = async (values) => {
-		console.log('Values submitted: ', values);
+		// console.log('Values submitted: ', values);
 		const { email, password } = values;
 		firebase
 			.auth()
@@ -56,16 +55,20 @@ const Login = () => {
 			});
 	};
 	return (
-		<Formik
-			initialValues={{}}
-			validationSchema={userSchema}
-			onSubmit={handleSubmit}
-		>
-			{({ isSubmitting, isValid, values, handleChange, touched, errors }) => {
-				return (
-					<>
-						<FormContainer>
-							<Logo src={logo} className='App-logo' alt='Min App Logo' />
+		<FormContainer>
+			<Logo src={logo} className='App-logo' alt='Min App Logo' />
+			<h2>Welcome back</h2>
+			<Formik
+				initialValues={{
+					email: '',
+					password: '',
+				}}
+				validationSchema={userSchema}
+				onSubmit={handleSubmit}
+			>
+				{({ isSubmitting, isValid, values, handleChange, touched, errors }) => {
+					return (
+						<>
 							<Form>
 								<TextField
 									style={{ marginBottom: '16px ' }}
@@ -102,11 +105,17 @@ const Login = () => {
 									Login
 								</Button>
 							</Form>
-						</FormContainer>
-					</>
-				);
-			}}
-		</Formik>
+							<p>
+								Need an account? Create one{' '}
+								<a href='/signup' style={{ color: 'white' }}>
+									here.
+								</a>
+							</p>
+						</>
+					);
+				}}
+			</Formik>
+		</FormContainer>
 	);
 };
 

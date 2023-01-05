@@ -76,9 +76,9 @@ const TransactionDrawer = (props) => {
 						const dbValues = {
 							...values,
 							// OLD
-							category: categories.find((cat) => cat.value === values.category)
-								.value,
-							type: types.find((typ) => typ.value === values.type).value,
+							// category: categories.find((cat) => cat.value === values.category)
+							// 	.value,
+							// type: types.find((typ) => typ.value === values.type).value,
 
 							// category: Object.keys(categories).find(
 							// 	(cat) => cat.value === values.category
@@ -120,10 +120,13 @@ const TransactionDrawer = (props) => {
 										type='date'
 										name='date'
 										label=''
-										value={values.date}
-										// {new Intl.DateTimeFormat("fr-CA").format(
-										// 	new Date(values.date)
-										//   )}
+										value={
+											values.date &&
+											new Intl.DateTimeFormat('fr-CA').format(
+												new Date(values.date)
+											)
+										}
+										//2022-12-31
 										onChange={handleChange}
 										error={touched.date && Boolean(errors.date)}
 										helperText={touched.date && errors.date}

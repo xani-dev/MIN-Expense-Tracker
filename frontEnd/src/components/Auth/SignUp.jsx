@@ -29,6 +29,7 @@ const Logo = styled.img`
 
 const SignUp = () => {
 	const history = useNavigate();
+
 	const userSchema = Yup.object().shape({
 		email: Yup.string().required('Required Field'),
 		password: Yup.string().required('Required Field'),
@@ -37,7 +38,7 @@ const SignUp = () => {
 	const { setUser } = useContext(AuthContext);
 
 	const handleSubmit = async (values) => {
-		console.log('submitted: ', values);
+		// console.log('Values submitted: ', values);
 		try {
 			const { status, data } = await authAPI.signup(values);
 			if (status === 200) {
